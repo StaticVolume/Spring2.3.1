@@ -5,13 +5,15 @@ import org.springframework.transaction.annotation.Transactional;
 import spring.model.User;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
 @Repository
 public class UserDaoImpl implements UserDao {
 
-    private  EntityManager entityManager;
+    @PersistenceContext
+    private final  EntityManager entityManager;
 
     public UserDaoImpl(EntityManager entityManager) {
         this.entityManager = entityManager;
@@ -22,9 +24,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     @Transactional
     public void addUserToDatabase(User user) {
-        entityManager.getTransaction().begin();
         entityManager.persist(user);
-        entityManager.getTransaction().commit();
     }
 
     @Override
@@ -38,9 +38,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     @Transactional
     public void deleteUserFromDatabase(long id) {
-        entityManager.getTransaction().begin();
         entityManager.remove(getUserByIdFromDatabase(id));
-        entityManager.getTransaction().commit();
     }
 
     @Override
