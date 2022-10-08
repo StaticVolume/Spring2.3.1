@@ -50,12 +50,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     @Transactional
-    public User updateUserInDatabase(long id, User user) {
-        User buffer = getUserByIdFromDatabase(id);
-        buffer.setName(user.getName());
-        buffer.setSurname(user.getSurname());
-        buffer.setAge(user.getAge());
-        buffer.setEmail(user.getEmail());
-        return buffer;
+    public void updateUserInDatabase(User user) {
+        entityManager.merge(user);
     }
 }

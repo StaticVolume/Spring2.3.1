@@ -13,6 +13,6 @@ public interface UserDao {
 
     public User getUserByIdFromDatabase(long id);
 
-     public User updateUserInDatabase(long id, User user);
+     public void updateUserInDatabase(User user);
 }
 
