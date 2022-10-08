@@ -1,6 +1,5 @@
 package spring.dao;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import spring.model.User;
@@ -12,7 +11,7 @@ import java.util.List;
 @Repository
 public class UserDaoImpl implements UserDao {
 
-    private final EntityManager entityManager;
+    private  EntityManager entityManager;
 
     public UserDaoImpl(EntityManager entityManager) {
         this.entityManager = entityManager;
@@ -23,8 +22,9 @@ public class UserDaoImpl implements UserDao {
     @Override
     @Transactional
     public void addUserToDatabase(User user) {
-    Session session = entityManager.unwrap(Session.class);
-    session.save(user);
+        entityManager.getTransaction().begin();
+        entityManager.persist(user);
+        entityManager.getTransaction().commit();
     }
 
     @Override
@@ -38,17 +38,16 @@ public class UserDaoImpl implements UserDao {
     @Override
     @Transactional
     public void deleteUserFromDatabase(long id) {
-        //entityManager.unwrap(Session.class).delete(getUserByIdFromDatabase(id));
-        Session session = entityManager.unwrap(Session.class);
-        session.beginTransaction();
-        session.delete(getUserByIdFromDatabase(id));
-        session.getTransaction().commit();
+        entityManager.getTransaction().begin();
+        entityManager.remove(getUserByIdFromDatabase(id));
+        entityManager.getTransaction().commit();
     }
 
     @Override
     @Transactional(readOnly = true)
     public User getUserByIdFromDatabase(long id) {
-        return entityManager.unwrap(Session.class).get(User.class,id);
+
+        return entityManager.find(User.class, id);
     }
 
     @Override
