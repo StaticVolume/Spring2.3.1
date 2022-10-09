@@ -33,6 +33,7 @@ import java.util.Properties;
 @PropertySource("classpath:hibernate.properties")
 public class Appconf implements WebMvcConfigurer {
     private final ApplicationContext applicationContext;
+    /**в environment находится информация из  hibernate properties*/
     private final Environment environment;
 
     @Autowired // не обязательно
@@ -41,6 +42,8 @@ public class Appconf implements WebMvcConfigurer {
         this.environment = environment;
     }
 
+
+    /**Конфигурация необходимая для обращения к html страницам (allUsers, index и т.д.) не использую полный путь*/
     @Bean
     public SpringResourceTemplateResolver templateResolver() {
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
@@ -51,6 +54,7 @@ public class Appconf implements WebMvcConfigurer {
         return templateResolver;
     }
 
+    /**Конфигурация необходимая для работы thymeleaf */
     @Bean
     public SpringTemplateEngine templateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
@@ -58,7 +62,7 @@ public class Appconf implements WebMvcConfigurer {
         templateEngine.setEnableSpringELCompiler(true);
         return templateEngine;
     }
-
+    /**Конфигурация необходимая для работы thymeleaf */
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
         ThymeleafViewResolver resolver = new ThymeleafViewResolver();
@@ -66,6 +70,7 @@ public class Appconf implements WebMvcConfigurer {
         registry.viewResolver(resolver);
     }
 
+    /**Конфигурируем поделючение к к базе данных*/
 @Bean
 public DataSource dataSource() {
     DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -76,7 +81,7 @@ public DataSource dataSource() {
 
     return dataSource;
 }
-
+    /**Конфигурируем сам hibernate, это лично его параметры*/
     private Properties hibernateProperties() {
         Properties properties = new Properties();
         properties.put("hibernate.dialect", environment.getRequiredProperty("hibernate.dialect"));
@@ -85,6 +90,7 @@ public DataSource dataSource() {
         return properties;
     }
 
+    /**Для того, чтобы адекватно работал EntityManager , необходимо сконфигурировать LocalContainerEntityManagerFactoryBean */
     @Bean
     public LocalContainerEntityManagerFactoryBean EntityManagerFactoryBean() {
         LocalContainerEntityManagerFactoryBean EntityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean ();
@@ -95,11 +101,14 @@ public DataSource dataSource() {
         return EntityManagerFactoryBean;
     }
 
+    /**Инициализируем EntityManager*/
     @Bean
     public EntityManager entityManager(){
         EntityManager entityManager = EntityManagerFactoryBean().getNativeEntityManagerFactory().createEntityManager();
         return  entityManager;
     }
+
+    /**Для того, чтобы корректно работала функция, помеченная @Transactional*/
 
     @Bean
     public PlatformTransactionManager hibernateTransactionManager(EntityManagerFactory entityManagerFactory) {
