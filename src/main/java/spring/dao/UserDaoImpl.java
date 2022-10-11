@@ -22,13 +22,11 @@ public class UserDaoImpl implements UserDao {
 
 
     @Override
-    @Transactional
     public void addUserToDatabase(User user) {
         entityManager.persist(user);
     }
 
     @Override
-   @Transactional(readOnly = true)
     public List<User> getAllUsersFromDatabase() {
         TypedQuery<User> query = entityManager.createQuery("FROM User", User.class);
         return query.getResultList();
@@ -36,20 +34,17 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    @Transactional
     public void deleteUserFromDatabase(long id) {
         entityManager.remove(getUserByIdFromDatabase(id));
     }
 
     @Override
-    @Transactional(readOnly = true)
     public User getUserByIdFromDatabase(long id) {
 
         return entityManager.find(User.class, id);
     }
 
     @Override
-    @Transactional
     public void updateUserInDatabase(User user) {
         entityManager.merge(user);
     }
